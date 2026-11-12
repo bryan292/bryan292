@@ -11,7 +11,7 @@ jobs:
       # Skip only that badge without requiring additional Projects permissions.
       - name: Prepare Metrics with the Achievements compatibility fix
         run: |
-          docker build -t metrics:3.34.0-beta - <<'DOCKERFILE'
+          docker build -t metrics:3.34.0 - <<'DOCKERFILE'
           FROM ghcr.io/lowlighter/metrics@sha256:b8013996b12be3ea049fad2e18db6b31083575a197e43ed63a690a094b9164fb
           WORKDIR /metrics
           RUN sed -i '/^    projects(first:/,/^    }/d' source/plugins/achievements/queries/achievements.graphql && sed -i '/^  \/\/Manager$/,/^  \/\/Reviewer$/{ /^  \/\/Reviewer$/!d; }' source/plugins/achievements/list/users.mjs
