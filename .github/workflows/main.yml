@@ -7,7 +7,16 @@ jobs:
   github-metrics:
     runs-on: ubuntu-latest
     steps:
-      - uses: lowlighter/metrics@latest
+      # The upstream Manager badge queries retired Projects (classic).
+      # Skip only that badge without requiring additional Projects permissions.
+      - name: Prepare Metrics with the Achievements compatibility fix
+        run: |
+          docker build -t metrics:3.34.0-beta - <<'DOCKERFILE'
+          FROM ghcr.io/lowlighter/metrics@sha256:b8013996b12be3ea049fad2e18db6b31083575a197e43ed63a690a094b9164fb
+          WORKDIR /metrics
+          RUN sed -i '/^    projects(first:/,/^    }/d' source/plugins/achievements/queries/achievements.graphql && sed -i '/^  \/\/Manager$/,/^  \/\/Reviewer$/{ /^  \/\/Reviewer$/!d; }' source/plugins/achievements/list/users.mjs
+          DOCKERFILE
+      - uses: lowlighter/metrics@65836723097537a54cd8eb90f61839426b4266b6 # 3.34.0-beta
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           committer_token: ${{ secrets.METRICS_TOKEN }}
@@ -19,7 +28,7 @@ jobs:
           config_timezone: America/Chicago
           optimize: no
           repositories_forks: yes
-          use_prebuilt_image: yes
+          use_prebuilt_image: no
 
           plugin_stars: yes
           plugin_stars_limit: 3
